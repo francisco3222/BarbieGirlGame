@@ -1,0 +1,17 @@
+#BlueJ class context
+comment0.target=Level1
+comment0.text=\n\ Nivel\ 1\ do\ jogo,\ contem\ alguns\ enimigos\n\ \n\ @Francisco\ Adelino\ \n
+comment1.params=
+comment1.target=Level1()
+comment2.params=
+comment2.target=void\ act()
+comment3.params=player
+comment3.target=void\ death(Players)
+comment3.text=\n\ controla\ o\ caso\ de\ perder\ uma\ vida\ reininciando\ o\ nivel\n
+comment4.params=
+comment4.target=void\ decoracao()
+comment4.text=\n\ coloca\ decoracao\ no\ nivel\ como\ as\ plantas\ e\ cactos\n
+comment5.params=
+comment5.target=void\ prepare()
+comment5.text=\n\ cria\ as\ plataformas\ usadas\ pelos\ players,\ e\ o\ objeto\ "Special"\ que\ permite\ passar\ para\ o\ proximo\ nivel\n
+numComments=6

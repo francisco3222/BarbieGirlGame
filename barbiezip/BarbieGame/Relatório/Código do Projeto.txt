@@ -1,0 +1,1243 @@
+public class City extends World
+{
+    public City()
+    {    
+        super(1200, 800, 1); 
+        getBackground().setColor(Color.BLACK);
+        getBackground().fill();
+        addObject(new Boom(), 600, 400);
+    }
+}
+
+public class EndScreen extends World
+{
+    private GreenfootSound endGame;
+    
+    public EndScreen()
+    {    
+        super(1200, 800, 1); 
+        endGame = new GreenfootSound("barbie.mp3");
+        endGame.play();
+        Level level = new Level();
+        showText("" + level.getPontos(), 600, 750);
+    }
+}
+
+public class GameOver extends World
+{
+    private GreenfootSound dead;
+    
+    public GameOver()
+    {
+        super(1200, 800, 1); 
+        dead = new GreenfootSound("Undertale_fans.mp3");
+        dead.play();
+        Greenfoot.stop();
+    }
+}
+
+public class Level extends World
+{
+    private static int pontos, vidas;
+    private int time, contador;
+    private GreenfootSound fundo1, fundo2;
+
+    public Level()
+    {    
+        super(1200, 800, 1, false);
+        setPaintOrder(NextLevel.class, GameOver.class, Vidas.class, Barbie.class, Ken.class, Special.class, Stone.class, Plant.class, Cactus.class, Ground.class);
+        addObject(new Vidas(), 100, 50);
+        fundo1 = new GreenfootSound("fundo1.mp3");
+        fundo2 = new GreenfootSound("Undertale_menu.mp3");
+        showText("Pontos: " + pontos, 600, 50);
+        addObject(new Barbie(),300, 680);
+        addObject(new Ken(), 200, 680);
+        pisoDePedra();
+        for(int i = 0; i < getWidth(); i += 96){
+            addObject(new Ground(), i, 747);
+        }
+    }
+
+    public Level(int level, String music)
+    {    
+        super(1200, 800, 1, false);
+        setPaintOrder(NextLevel.class, GameOver.class, Vidas.class, Barbie.class, Ken.class, Special.class, Stone.class, Plant.class, Cactus.class, Ground.class);
+        addObject(new Vidas(), 100, 50);
+        fundo1 = new GreenfootSound("fundo1.mp3");
+        fundo2 = new GreenfootSound("Undertale_menu.mp3");
+        showText("Pontos: " + pontos, 600, 50);
+        showText("Nivel " + level, 600, 50);
+        addObject(new Barbie(),300, 680);
+        addObject(new Ken(), 200, 680);
+        setTime(120);
+        jukebox("stop", "entrance");
+        jukebox("stop", "normal");
+        jukebox("start", music);
+        pisoDePedra();
+    }
+
+    /**
+     * uma funcao que vai adicionar um chao de pedra no fundo do nivel
+     */
+    public void pisoDePedra()
+    {
+        for(int i = 0; i < getWidth(); i += 96){
+            addObject(new Stone(), i, 747);
+        }
+    }
+
+    /**
+     * uma funcao que tem o objetivo de iniciar e parar musicas de fundo em comando
+     */
+    public void jukebox(String state, String music){
+        if(state == "start"){
+            if(music == "entrance")
+                fundo2.playLoop();
+            if(music == "normal")
+                fundo1.playLoop();
+        }
+        if(state == "stop"){
+            if(music == "entrance")
+                fundo2.stop();
+            if(music == "normal")
+                fundo1.stop();
+        }
+    }
+
+    /**
+     * um temporizador que aparece no topo do nivel que ser'a usado para os niveis
+     */
+    public void timer(){
+        if(contador == 60){
+            time--;
+            contador = 0;
+        }
+        contador++;
+        showText("" + time, 600, 80);
+    }
+
+    public void setTime(int newTime){
+        time = newTime;
+    }
+
+    public int getPontos(){
+        return pontos;
+    }
+
+    public int getAVida(){
+        return vidas;
+    }
+
+    public void addPoints(){
+        pontos += time;
+    }
+
+    /**
+     * uma funcao que ira criar o efeito de perder ao piscar as suas texturas, e se ainda tiver mais que 0 vidas ira reininciar o nivel atual, senao ira saltar para o ecra de fim de jogo
+     */
+    public void hyperDeath(Players player, boolean last){
+        for(int i = 0; i < 3; i++){
+            player.getImage().setTransparency(0);
+            Greenfoot.delay(10);
+            player.getImage().setTransparency(255);
+            Greenfoot.delay(10);
+        }
+        if(vidas > 0){
+            vidas--;
+            List<Stone> stones = getObjects(Stone.class);
+            List<Ground> ground = getObjects(Ground.class);
+            List<Plant> plants = getObjects(Plant.class);
+            List<Cactus> cactus = getObjects(Cactus.class);
+            List<Enemies> enemies = getObjects(Enemies.class);
+            removeObjects(stones);
+            removeObjects(ground);
+            removeObjects(plants);
+            removeObjects(cactus);
+            removeObjects(enemies);
+            if(!last)
+                removeObject(getObjects(Special.class).get(0));
+            Players ken = getObjects(Ken.class).get(0);
+            Players barbie = getObjects(Barbie.class).get(0);
+            ken.setLocation(200, 680);
+            barbie.setLocation(300, 680);
+        }
+        if(vidas == 0){
+            fundo1.stop();
+            fundo2.stop();
+            restartP();
+            restartVidas();
+            if (!last)
+                Greenfoot.setWorld(new GameOver());
+            else
+                Greenfoot.setWorld(new City());
+        }
+    }
+
+    public static void restartP(){
+        pontos = 0;
+    }
+
+    public static void restartVidas(){
+        vidas = 3;
+    }
+}
+
+public class Level0 extends Level
+{
+    public Level0()
+    {    
+        super(0, "entrance");
+        decoracao();
+        prepare();
+    }
+    
+    public void act(){
+        timer();
+    }
+
+    /**
+     * controla o caso de perder uma vida reininciando o nivel
+     */
+    public void death(Players player){;
+        hyperDeath(player, false);
+        pisoDePedra();
+        decoracao();
+        prepare();
+    }
+
+    /**
+     * coloca decoracao no nivel como as plantas e cactos
+     */
+    private void decoracao(){
+        addObject(new Cactus(),getWidth()/2, 707);
+        addObject(new Cactus(),getWidth()-100, 707);
+        addObject(new Cactus(),getWidth()-1100, 707);
+        addObject(new Plant(),getWidth()/3, 707);
+        addObject(new Plant(),getWidth()-300, 707);
+        addObject(new Plant(),getWidth()-1000, 707);
+        addObject(new Plant(),79,-74);
+        addObject(new Plant(),844,-357);
+        addObject(new Cactus(),448,-415);
+        addObject(new Cactus(),521,-676);
+        addObject(new Plant(),664,-684);
+        addObject(new Cactus(),991,43);
+        addObject(new Plant(),283,257);
+        addObject(new Cactus(),694,412);
+    }
+
+    /**
+     * cria as plataformas usadas pelos players, e o objeto "Special" que permite passar para o proximo nivel
+     */
+    private void prepare()
+    {
+        addObject(new Stone(),986,603);
+        addObject(new Stone(),850,603);
+        addObject(new Stone(),610,603);
+        addObject(new Stone(),396,606);
+        addObject(new Stone(),738,450);
+        addObject(new Stone(),600,420);
+        addObject(new Stone(),336,448);
+        addObject(new Stone(),259,607);
+        addObject(new Stone(),261,606);
+        addObject(new Stone(),72,440);
+        addObject(new Stone(),1123,494);
+        addObject(new Stone(),940,376);
+        addObject(new Stone(),236,309);
+        addObject(new Stone(),371,279);
+        addObject(new Stone(),1075,376);
+        addObject(new Stone(),767,257);
+        addObject(new Stone(),560,135);
+        addObject(new Stone(),901,225);
+        addObject(new Stone(),1130,268);
+        addObject(new Stone(),696,134);
+        addObject(new Stone(),693,135);
+        addObject(new Stone(),324,63);
+        addObject(new Stone(),130,-26);
+        addObject(new Stone(),55,163);
+        addObject(new Stone(),1043,83);
+        addObject(new Stone(),788,-25);
+        addObject(new Stone(),498,-110);
+        addObject(new Stone(),362,-143);
+        addObject(new Stone(),226,-177);
+        addObject(new Stone(),666,-277);
+        addObject(new Stone(),393,-634);
+        addObject(new Stone(),529,-634);
+        addObject(new Stone(),663,-634);
+        addObject(new Stone(),799,-634);
+        addObject(new Special(), 600, -675);
+        addObject(new Stone(),1049,-162);
+        addObject(new Stone(),408,-376);
+        addObject(new Stone(),153,-493);
+        addObject(new Stone(),801,-306);
+        addObject(new Stone(),938,-355);
+        addObject(new Stone(),1129,-516);
+        addObject(new Stone(),674,-479);
+        List<Stone> stones = getObjects(Stone.class);
+        for (int i = 0; i < stones.size(); i++){
+            int x = stones.get(i).getX();
+            int y = stones.get(i).getY() - 16;
+            addObject(new Ground(), x, y);
+        }
+    }
+}
+
+public class Level1 extends Level
+{
+    public Level1()
+    {     
+        super(1, "normal");
+        decoracao();
+        prepare();
+    }
+
+    public void act(){
+        timer();
+    }
+
+    /**
+     * controla o caso de perder uma vida reininciando o nivel
+     */
+    public void death(Players player){;
+        hyperDeath(player, false);
+        pisoDePedra();
+        decoracao();
+        prepare();
+    }
+
+    /**
+     * coloca decoracao no nivel como as plantas e cactos
+     */
+    private void decoracao(){
+        addObject(new Cactus(),getWidth()/2, 707);
+        addObject(new Cactus(),getWidth()-100, 707);
+        addObject(new Cactus(),getWidth()-1100, 707);
+        addObject(new Plant(),getWidth()/3, 707);
+        addObject(new Plant(),getWidth()-300, 707);
+        addObject(new Plant(),getWidth()-1000, 707);
+    }
+
+    /**
+     * cria as plataformas usadas pelos players, e o objeto "Special" que permite passar para o proximo nivel
+     */
+    private void prepare()
+    {
+        addObject(new Special(), 600, -675);
+        addObject(new Stone(),305,574);
+        addObject(new Stone(),393,-634);
+        addObject(new Stone(),529,-634);
+        addObject(new Stone(),663,-634);
+        addObject(new Stone(),799,-634);
+        addObject(new Stone(),439,546);
+        addObject(new Stone(),575,519);
+        addObject(new Stone(),711,488);
+        addObject(new Stone(),72,491);
+        addObject(new Stone(),848,458);
+        addObject(new Stone(),984,427);
+        addObject(new Stone(),1114,559);
+        addObject(new Stone(),286,349);
+        addObject(new Stone(),72,163);
+        addObject(new Stone(),587,248);
+        addObject(new Stone(),722,244);
+        addObject(new Stone(),972,199);
+        addObject(new Stone(),1132,103);
+        addObject(new Plant(),886,410);
+        addObject(new Plant(),39,123);
+        addObject(new Cactus(),656,211);
+        addObject(new Stone(),400,65);
+        addObject(new Stone(),230,-95);
+        addObject(new Stone(),536,36);
+        addObject(new Stone(),672,36);
+        addObject(new Stone(),487,-165);
+        addObject(new Stone(),927,-54);
+        addObject(new Plant(),881,-104);
+        addObject(new Stone(),429,-457);
+        addObject(new Stone(),564,-457);
+        addObject(new Stone(),698,-344);
+        addObject(new Stone(),825,-456);
+        addObject(new Plant(),555,-502);
+        addObject(new Cactus(),733,-493);
+        addObject(new Plant(),282,-141);
+        addObject(new Stone(),71,-252);
+        addObject(new Stone(),772,-261);
+        addObject(new Stone(),1128,-223);
+        addObject(new Stone(),972,-345);
+        addObject(new Cactus(),480,-7);
+        addObject(new Cactus(),1183,-264);
+        addObject(new Stone(),301,-350);
+        addObject(new Stone(),188,-580);
+        addObject(new Stone(),995,-620);
+        addObject(new Security(),914,-122);
+        addObject(new Security(),513,-26);
+        addObject(new Security(),257,1086);
+        addObject(new Security(),988,359);
+        List<Stone> stones = getObjects(Stone.class);
+        for (int i = 0; i < stones.size(); i++){
+            int x = stones.get(i).getX();
+            int y = stones.get(i).getY() - 16;
+            addObject(new Ground(), x, y);
+        }
+    }
+}
+
+public class Level2 extends Level
+{
+    public Level2()
+    {    
+        super(2, "normal");
+        decoracao();
+        prepare();
+    }
+    
+    public void act(){
+        timer();
+    }
+    
+    /**
+     * controla o caso de perder uma vida reininciando o nivel
+     */
+    public void death(Players player){;
+        hyperDeath(player, false);
+        pisoDePedra();
+        decoracao();
+        prepare();
+    }
+
+    /**
+     * coloca decoracao no nivel como as plantas e cactos
+     */
+    private void decoracao(){
+        addObject(new Cactus(),getWidth()/2, 707);
+        addObject(new Cactus(),getWidth()-100, 707);
+        addObject(new Cactus(),getWidth()-1100, 707);
+        addObject(new Plant(),getWidth()/3, 707);
+        addObject(new Plant(),getWidth()-300, 707);
+        addObject(new Plant(),getWidth()-1000, 707);
+    }
+
+    /**
+     * cria as plataformas usadas pelos players, e o objeto "Special" que permite passar para o proximo nivel
+     */
+    private void prepare()
+    {
+        addObject(new Special(), 600, -675);
+        addObject(new Stone(),127,596);
+        addObject(new Stone(),247,596);
+        addObject(new Stone(),384,569);
+        addObject(new Stone(),69,372);
+        addObject(new Stone(),518,542);
+        addObject(new Stone(),854,473);
+        addObject(new Stone(),985,446);
+        addObject(new Stone(),1130,581);
+        addObject(new Stone(),314,293);
+        addObject(new Stone(),449,265);
+        addObject(new Stone(),423,-581);
+        addObject(new Stone(),555,-581);
+        addObject(new Stone(),689,-581);
+        addObject(new Stone(),822,-581);
+        addObject(new Stone(),1129,277);
+        addObject(new Stone(),639,380);
+        addObject(new Stone(),740,190);
+        addObject(new Stone(),875,190);
+        addObject(new Stone(),78,49);
+        addObject(new Stone(),177,84);
+        addObject(new Stone(),437,-31);
+        addObject(new Stone(),562,-31);
+        addObject(new Stone(),1138,-2);
+        addObject(new Stone(),1038,20);
+        addObject(new Stone(),825,-129);
+        addObject(new Stone(),192,-221);
+        addObject(new Stone(),67,-404);
+        addObject(new Stone(),502,-369);
+        addObject(new Stone(),371,-369);
+        addObject(new Stone(),1131,-49);
+        addObject(new Stone(),966,-330);
+        addObject(new Stone(),813,-582);
+        addObject(new Cactus(),304,562);
+        addObject(new Security(),73,532);
+        addObject(new Plant(),70,550);
+        addObject(new Cactus(),939,152);
+        addObject(new Plant(),680,145);
+        addObject(new Security(),700,127);
+        addObject(new Plant(),389,-78);
+        addObject(new Security(),389,-93);
+        addObject(new Cactus(),561,-403);
+        addObject(new Plant(),315,-410);
+        addObject(new Security(),325,-430);
+        addObject(new Security(),259,-556);
+        addObject(new Plant(),26,4);
+        addObject(new Plant(),1021,-374);
+        addObject(new Plant(),571,-629);
+        addObject(new Cactus(),699,-618);
+        addObject(new Cactus(),1188,-525);
+        addObject(new Plant(),1181,-45);
+        addObject(new Cactus(),903,442);
+        addObject(new Plant(),1043,397);
+        addObject(new Cactus(),162,48);
+        List<Stone> stones = getObjects(Stone.class);
+        for (int i = 0; i < stones.size(); i++){
+            int x = stones.get(i).getX();
+            int y = stones.get(i).getY() - 16;
+            addObject(new Ground(), x, y);
+        }
+    }
+}
+
+public class Level3 extends Level
+{
+    public Level3()
+    {    
+        super(3, "normal");
+        decoracao();
+        prepare();
+    }
+    
+    public void act(){
+        timer();
+    }
+
+    /**
+     * controla o caso de perder uma vida reininciando o nivel
+     */
+    public void death(Players player){;
+        hyperDeath(player, false);
+        pisoDePedra();
+        decoracao();
+        prepare();
+    }
+
+    /**
+     * coloca decoracao no nivel como as plantas e cactos
+     */
+    private void decoracao(){
+        addObject(new Cactus(),getWidth()/2, 707);
+        addObject(new Cactus(),getWidth()-100, 707);
+        addObject(new Cactus(),getWidth()-1100, 707);
+        addObject(new Plant(),getWidth()/3, 707);
+        addObject(new Plant(),getWidth()-300, 707);
+        addObject(new Plant(),getWidth()-1000, 707);
+    }
+
+    /**
+     * cria as plataformas usadas pelos players, e o objeto "Special" que permite passar para o proximo nivel
+     */
+    private void prepare()
+    {
+        addObject(new Special(), 600, -675);
+        addObject(new Stone(),208,557);
+        addObject(new Stone(),72,527);
+        addObject(new Stone(),425,400);
+        addObject(new Stone(),559,400);
+        addObject(new Stone(),693,400);
+        addObject(new Security(),388,339);
+        addObject(new Stone(),925,547);
+        addObject(new Stone(),1132,409);
+        addObject(new Stone(),828,371);
+        addObject(new Plant(),783,327);
+        addObject(new Cactus(),16,492);
+        addObject(new Stone(),199,256);
+        addObject(new Stone(),71,71);
+        addObject(new Stone(),938,143);
+        addObject(new Stone(),1070,144);
+        addObject(new Stone(),1141,118);
+        addObject(new Security(),892,87);
+        addObject(new Plant(),1178,72);
+        addObject(new Cactus(),1179,370);
+        addObject(new Stone(),427,115);
+        addObject(new Stone(),531,90);
+        addObject(new Stone(),319,-101);
+        addObject(new Stone(),453,-129);
+        addObject(new Stone(),743,-60);
+        addObject(new Stone(),983,-143);
+        addObject(new Stone(),1119,-144);
+        addObject(new Stone(),783,-310);
+        addObject(new Stone(),647,-339);
+        addObject(new Plant(),358,-147);
+        addObject(new Cactus(),451,80);
+        addObject(new Plant(),739,-352);
+        addObject(new Security(),939,-205);
+        addObject(new Security(),472,-400);
+        addObject(new Stone(),514,-541);
+        addObject(new Plant(),507,-585);
+        addObject(new Cactus(),631,-575);
+        addObject(new Stone(),67,-302);
+        addObject(new Stone(),200,-301);
+        addObject(new Security(),27,-364);
+        addObject(new Stone(),128,-534);
+        addObject(new Stone(),990,-409);
+        addObject(new Stone(),1138,-539);
+        addObject(new Cactus(),1038,-444);
+        addObject(new Cactus(),76,-568);
+        addObject(new Stone(),528,-339);
+        addObject(new Stone(),545,-541);
+        addObject(new Stone(),413,-541);
+        addObject(new Stone(),659,-541);
+        addObject(new Stone(),765,-541);
+        addObject(new Stone(),689,204);
+        addObject(new Security(),478,27);
+        addObject(new Plant(),13,-346);
+        addObject(new Plant(),931,-185);
+        addObject(new Plant(),370,357);
+        addObject(new Cactus(),1182,-180);
+        addObject(new Cactus(),752,367);
+        addObject(new Cactus(),261,-339);
+        List<Stone> stones = getObjects(Stone.class);
+        for (int i = 0; i < stones.size(); i++){
+            int x = stones.get(i).getX();
+            int y = stones.get(i).getY() - 16;
+            addObject(new Ground(), x, y);
+        }
+    }
+}
+
+public class Level4 extends Level
+{
+    public Level4()
+    {    
+        super(4, "normal");
+        decoracao();
+        prepare();
+    }
+    
+    public void act(){
+        timer();
+    }
+
+    /**
+     * controla o caso de perder uma vida reininciando o nivel
+     */
+    public void death(Players player){;
+        hyperDeath(player, true);
+        pisoDePedra();
+        decoracao();
+        prepare();
+    }
+
+    /**
+     * coloca decoracao no nivel como as plantas e cactos
+     */
+    private void decoracao(){
+        addObject(new Cactus(),getWidth()/2, 707);
+        addObject(new Cactus(),getWidth()-100, 707);
+        addObject(new Cactus(),getWidth()-1100, 707);
+        addObject(new Plant(),getWidth()/3, 707);
+        addObject(new Plant(),getWidth()-300, 707);
+        addObject(new Plant(),getWidth()-1000, 707);
+    }
+
+    /**
+     * cria as plataformas usadas pelos players, e o objeto "Special" que permite passar para o proximo nivel
+     */
+    private void prepare()
+    {
+        addObject(new Stone(),71,854);
+        addObject(new Stone(),324,417);
+        addObject(new Stone(),452,417);
+        addObject(new Stone(),68,267);
+        addObject(new Stone(),495,41);
+        addObject(new Stone(),627,41);
+        addObject(new Stone(),285,122);
+        addObject(new Security(),467,-27);
+        addObject(new Stone(),65,-190);
+        addObject(new Stone(),198,-167);
+        addObject(new Stone(),330,-166);
+        addObject(new Security(),169,-225);
+        addObject(new Stone(),643,-487);
+        addObject(new Stone(),775,-487);
+        addObject(new Stone(),1036,-488);
+        addObject(new Oppenheimer(),880,-545);
+        addObject(new Stone(),209,-374);
+        addObject(new Stone(),423,-447);
+        addObject(new Stone(),614,-134);
+        addObject(new Stone(),911,-487);
+        addObject(new Plant(),268,371);
+        addObject(new Cactus(),518,377);
+        addObject(new Plant(),442,-6);
+        addObject(new Cactus(),688,3);
+        addObject(new Plant(),144,-212);
+        addObject(new Cactus(),392,-203);
+        addObject(new Cactus(),150,-407);
+        addObject(new Cactus(),1025,-535);
+        addObject(new Plant(),605,-535);
+        addObject(new Cactus(),225,93);
+        addObject(new Plant(),11,1325);
+        addObject(new Security(),289,350);
+        addObject(new Security(),562,-198);
+        addObject(new Security(),25,203);
+        addObject(new Stone(),68,568);
+        List<Stone> stones = getObjects(Stone.class);
+        for (int i = 0; i < stones.size(); i++){
+            int x = stones.get(i).getX();
+            int y = stones.get(i).getY() - 16;
+            addObject(new Ground(), x, y);
+        }
+    }
+}
+
+public class LevelTutorial extends Level
+{
+    public LevelTutorial(){
+        addObject(new Tutorial(), 600, 400);
+        addObject(new Tutorial2(), 600, 500);
+    }
+    
+    public void act(){
+        if(Greenfoot.isKeyDown("e")){
+            Greenfoot.setWorld(new Level0());
+        }
+    }
+}
+
+public class Start extends World
+{
+    private GreenfootSound menuMusic;
+    
+    public Start()
+    {    
+        super(1000, 800, 1); 
+        startMenu();
+        Level.restartVidas();
+        Level.restartP();
+        menuMusic = new GreenfootSound("barbiemenu.mp3");
+        menuMusic.playLoop();
+    }
+    
+    public GreenfootSound getMenuMusic(){
+        return menuMusic;
+    }
+    
+    public void startMenu(){
+        addObject(new Icon(), getWidth()/2, getHeight()/3);
+        addObject(new StartButton(), getWidth()/2, getHeight()*3/4);
+    }
+}
+
+public class Boom extends Actor
+{
+    private GreenfootSound siren;
+    
+    public Boom(){
+        getImage().setTransparency(0);
+        siren = new GreenfootSound("sirene.mp3");
+        siren.playLoop();
+        for(int i = 0; i < 256; i++)
+            getImage().setTransparency(i);
+    }
+}
+
+public class Gravity extends Actor
+{
+    private boolean falling, atGround;
+    private int gravitySpeed; //a velocidade da gravidade quando cai
+    private int contas;
+    private int desceu;
+
+    public void atGround(){
+        if(isTouching(Ground.class)){
+            gravitySpeed = 0;
+            falling = false;
+        } 
+    }
+    
+    public void gravity(){
+        if(!isTouching(Ground.class)){
+            setLocation(getX(), getY()+ gravitySpeed);
+            gravitySpeed++;
+            falling = true;
+        }
+    }
+
+    public boolean getFalling(){
+        return falling;
+    }
+
+    public void setFalling(boolean fall){
+        falling = fall;
+    }
+
+    public void setGravitySpeed(int speed){
+        gravitySpeed = speed;
+    }
+
+    public void descendo(){
+        int downSpeed = stayInScreen();
+        if(getWorld() instanceof Level4){
+            if (desceu < 800){
+                setLocation(getX(), getY()+downSpeed);
+                desceu++;
+            }
+        }
+        else if ( getWorld() instanceof LevelTutorial){
+            
+        }
+        else{
+            if (desceu < 1200){
+                setLocation(getX(), getY()+downSpeed);
+                desceu++;
+            }
+        }
+    }
+    
+    public int stayInScreen(){
+        List<Players> players = getWorld().getObjects(Players.class);
+        for (Players player : players){
+            if(player.getY() < 100){
+                return 5;
+            }
+        }
+        return 1;
+    }
+}
+
+public class Enemies extends Gravity
+{
+    private int flipCounter, imageFliped, direction;
+    private boolean flip;
+
+    public void moveImage(GreenfootImage base, GreenfootImage walk1, GreenfootImage walk2){
+        if(flipCounter == 10){
+            if(imageFliped == 0){
+                setImage(walk1);
+                imageFliped = 1;
+            } else if (imageFliped == 1){
+                setImage(base);
+                imageFliped = 2;
+            }else if (imageFliped == 2){
+                setImage(walk2);
+                imageFliped = 3;
+            }else{
+                setImage(base);
+                imageFliped = 0;
+            }
+            flipCounter = 0;
+        }
+        flipCounter++;
+        flipImage(base, walk1, walk2);
+    }
+
+    public void flipImage(GreenfootImage base, GreenfootImage walk1, GreenfootImage walk2){
+        if(isTouching(Cactus.class)){
+            if(!flip){
+                base.mirrorHorizontally();
+                walk1.mirrorHorizontally();
+                walk2.mirrorHorizontally();
+                flip = true;
+            }
+        }
+        if(isTouching(Plant.class)){
+            if(flip){
+                base.mirrorHorizontally();
+                walk1.mirrorHorizontally();
+                walk2.mirrorHorizontally();
+                flip = false;
+
+            }
+        }
+    }
+}
+
+public class Oppenheimer extends Enemies
+{
+    private GreenfootImage base, walk1, walk2;
+    private int direction;
+
+    public Oppenheimer(){
+        base = getImage();
+        walk1 = new GreenfootImage("oppenheimer1.png");
+        walk2 = new GreenfootImage("oppenheimer2.png"); 
+        direction = 3;
+    }
+
+    public void act()
+    {
+        gravity();
+        atGround();
+        moving(direction);
+        moveImage(base,walk1,walk2);
+    }
+    
+    /**
+     * uma funçao que faz o Oppenheimer mover entro de uma area entre catos e plantas
+     */
+    public void moving(int speed){
+        if ((direction == 3 && isTouching(Cactus.class)) || (direction == -3 && isTouching(Plant.class)) || isAtEdge()) 
+            direction = -direction;
+        move(direction);
+    }
+}
+
+public class Security extends Enemies
+{
+    private GreenfootImage enemy, enemy1, enemy2;
+    private int flipCounter; // contador para mudar a imagem
+    private int imageFliped; //qual a imagem a ser usado
+    private int direction;
+    public Security(){
+        style();    
+        direction = 1;
+    }
+    
+    /**
+     * uma funçao que define se o enimigo vai ser um segurança ou um empresario
+     */
+    private void style(){
+        if(Greenfoot.getRandomNumber(2) == 0){
+            enemy = getImage();
+            enemy1 = new GreenfootImage("secure1.png");
+            enemy2 = new GreenfootImage("secure2.png");
+        } else{
+            enemy = new GreenfootImage("business.png");
+            enemy1 = new GreenfootImage("business1.png");
+            enemy2 = new GreenfootImage("business2.png");
+        }
+    }
+
+    public void act()
+    {
+        moveImage(enemy,enemy1,enemy2);
+        moving(direction);
+        gravity();
+        atGround();
+    }
+    
+    /**
+     * funçao que permite o movimento dentro de areas especificas com uma baixa velocidade
+     */
+    public void moving(int speed){
+        if ((direction == 1 && isTouching(Cactus.class)) || (direction == -1 && isTouching(Plant.class)) || isAtEdge()) 
+            direction = -direction;
+        move(direction);
+    }
+}
+
+public class LevelObjects extends Gravity
+{
+}
+
+public class Cactus extends LevelObjects
+{
+    public void act()
+    {
+        gravity();
+        atGround();
+    }
+}
+
+public class Ground extends LevelObjects
+{
+    public void act()
+    {
+        descendo();
+    }
+}
+
+public class Plant extends LevelObjects
+{
+    public void act()
+    {
+        gravity();
+        atGround();
+    }
+}
+
+public class Special extends LevelObjects
+{
+    public void act(){
+        if (!isTouching(NextLevel.class))
+            descendo();
+    }
+}
+
+public class Stone extends LevelObjects
+
+{
+    public void act()
+    {
+        descendo();
+    }
+}
+
+public class Players extends Gravity
+{
+    private boolean jumping, flip;
+    private int jumpHeight, flipCounter, imageFliped;
+    private World theLevel;
+
+    /**
+     * Uma funçao que tem o objetivo de chamar todas as funcoes dos players dependendo de quem e, dando as indicacoes corretas de teclas
+     */
+    public void movementManager(String player, GreenfootImage base, GreenfootImage walk1, GreenfootImage walk2){
+        String right, left, up;
+        if(player == "Barbie"){
+            right = "right";
+            left = "left";
+            up = "up";
+        } else {
+            right = "d";
+            left = "a";
+            up = "w";
+        }
+        move(right, left, base, walk1, walk2);
+        atGroundConfirm();
+        jump(up);
+        atGround();
+        if(!getJumping())
+            gravity();
+        isDead();
+        descendo();
+        youWon();
+        theEnd();
+    }
+
+    /**
+     * funçao que permite o movimento dos players se a tecla para este estiver a ser precionada
+     */
+    public void move(String right, String left, GreenfootImage base, GreenfootImage walk1, GreenfootImage walk2){
+        if(Greenfoot.isKeyDown(right)){
+            move(5);
+            moveImage(left, right, base, walk1, walk2);
+        }
+        if(Greenfoot.isKeyDown(left)){
+            move(-5);
+            moveImage(left, right, base, walk1, walk2);
+        }
+        if(!(Greenfoot.isKeyDown(left) || Greenfoot.isKeyDown(right))){
+            setImage(base);
+            imageFliped = 0;
+        }
+    }
+
+    /**
+     * funçao que cria a animacao durante o movimento dos players ao fazer um ciclo por estas enquanto o player ainda estiver a andar
+     */
+    public void moveImage(String left, String right, GreenfootImage base, GreenfootImage walk1, GreenfootImage walk2){
+        if(flipCounter == 10){
+            if(imageFliped == 0){
+                setImage(walk1);
+                imageFliped = 1;
+            } else if (imageFliped == 1){
+                setImage(base);
+                imageFliped = 2;
+            }else if (imageFliped == 2){
+                setImage(walk2);
+                imageFliped = 3;
+            }else{
+                setImage(base);
+                imageFliped = 0;
+            }
+            flipCounter = 0;
+        }
+        flipCounter++;
+        flipImage(base, walk1, walk2, left, right);
+    }
+
+    /**
+     * funçao que vira a imagem do player e as respetivas imagens para que este ande dependendo da direcao que andou por ultimo
+     */
+    private void flipImage(GreenfootImage base, GreenfootImage walk1, GreenfootImage walk2, String left, String right){
+        if(Greenfoot.isKeyDown(left)){
+            if(!flip){
+                base.mirrorHorizontally();
+                walk1.mirrorHorizontally();
+                walk2.mirrorHorizontally();
+                flip = true;
+            }
+        }
+        if(Greenfoot.isKeyDown(right)){
+            if(flip){
+                base.mirrorHorizontally();
+                walk1.mirrorHorizontally();
+                walk2.mirrorHorizontally();
+                flip = false;
+            }
+        }
+    }
+
+    /**
+     * funçao que define o salto dos players ao dar uma velocidade inicial que diminui com o tempo, eventualmente sendo 0 e acabando o salto deixando a gravidade tomar conta
+     */
+    public void jump(String up){
+        if(Greenfoot.isKeyDown(up) && getFalling() == false && jumping == false){
+            jumping = true;
+            jumpHeight = 20;
+            setLocation(getX(), getY()-jumpHeight);
+        }
+        else if (jumping == true && getFalling() == false){
+            jumpHeight--;
+            setLocation(getX(), getY()-jumpHeight);
+        }
+        if (jumping == true && jumpHeight <= 0){
+            jumping = false;
+            setFalling(true);
+        }
+    }
+
+    /**
+     * funçao que verifica se o player esta a tocar em um dos enimidos do tipo seguranca, e se tiver, devera executar a funçao de morte do respetivo nivel em que se encontra
+     */
+    public void isDead(){
+        if(isTouching(Security.class) || getY() >= 799){
+            World theLevel = getWorld();
+            if (theLevel instanceof Level0)
+                ((Level0)theLevel).death(this);
+            if (theLevel instanceof Level1)
+                ((Level1)theLevel).death(this);
+            if (theLevel instanceof Level2)
+                ((Level2)theLevel).death(this);
+            if (theLevel instanceof Level3)
+                ((Level3)theLevel).death(this);
+            if (theLevel instanceof Level4)
+                ((Level4)theLevel).death(this);
+        } 
+    }
+
+    /**
+     * funçao que ira permitir a mudanca para o proximo nivel do jogo quando algum dos players tocar no objeto de classe "Special" desde que a posicao no eixo dos Y deste seja
+     * superior a 200 para impedir que os players possam passar de nivel sem estarem a espera disso e que apenas passem se for o proposito
+     */
+    public void youWon(){
+        List<Special> specials = getWorld().getObjects(Special.class);
+        if(!specials.isEmpty() && specials.get(0).getY() >= 200)
+            if(isTouching(Special.class)){
+                getWorld().addObject(new NextLevel(), 600, 400);
+                Level level = getWorldOfType(Level.class);
+                level.addPoints();
+                getWorld().showText("" + level.getPontos(), 825, 292);
+                Greenfoot.delay(200);
+                NextLevel next = getWorld().getObjects(NextLevel.class).get(0);
+                getWorld().removeObject(next);
+                if (getWorld() instanceof Level0){
+                    level.jukebox("stop", "entrance");
+                    Greenfoot.setWorld(new Level1());
+                }
+                if (getWorld() instanceof Level1){
+                    level.jukebox("stop", "normal");
+                    Greenfoot.setWorld(new Level2());
+                }
+                if (getWorld() instanceof Level2)
+                    Greenfoot.setWorld(new Level3());
+                if (getWorld() instanceof Level3)
+                    Greenfoot.setWorld(new Level4());
+            }
+    }
+
+    /**
+     * uma pequena funçao com o opjetivo de impedir que o player fique a meio das plataformas ao puxa-lo para cima se este se encontrar a meio de uma
+     */
+    public void atGroundConfirm(){
+        List<Ground> platforms = getObjectsInRange(getImage().getHeight()/2 + 4, Ground.class);
+        if(!platforms.isEmpty() && !(platforms.get(0).getY() == getY())){
+            setLocation(getX(), getY()-5);
+        }
+    }
+
+    /**
+     * A funçao que define se o jogo terminou ao confirmar se o player esta a tocar no enimigo "Oppenheimer"
+     */
+    public void theEnd(){
+        if(isTouching(Oppenheimer.class)){
+            Level theLevel = getWorldOfType(Level.class);
+            theLevel.jukebox("stop", "normal");
+            Greenfoot.setWorld(new EndScreen());
+        }
+    }
+
+    public boolean getJumping(){
+        return jumping;
+    }
+}
+
+public class Barbie extends Players
+{
+    private GreenfootImage barbie = getImage();
+    private GreenfootImage barbie1, barbie2, gif;
+
+    public Barbie(){
+        barbie1 = new GreenfootImage("barbie1.png");
+        barbie2 = new GreenfootImage("barbie2.png");
+    }
+
+    public void act()
+    {
+        movementManager("Barbie", barbie, barbie1, barbie2);
+    }
+}
+
+public class Ken extends Players
+{
+    private GreenfootImage ken = getImage();
+    private GreenfootImage ken1, ken2;
+
+    public Ken(){
+        ken1 = new GreenfootImage("ken1.png");
+        ken2 = new GreenfootImage("ken2.png");
+    }
+
+    public void act()
+    {
+        movementManager("Ken", ken, ken1, ken2);
+    }
+}
+
+public class Icon extends Actor
+{
+    //Hello
+}
+
+public class NextLevel extends Actor
+{
+}
+
+public class StartButton extends Actor
+{
+    private Start start;
+    
+    public void act(){
+        if (Greenfoot.mousePressed(this))
+        {
+            start = getWorldOfType(Start.class);
+            start.getMenuMusic().stop();
+            Greenfoot.setWorld(new LevelTutorial());
+        }
+    }
+}
+
+public class Tutorial extends Actor
+{
+}
+
+public class Tutorial2 extends Actor
+{
+}
+
+public class Vidas extends Actor
+{
+    private Level level;
+    private GreenfootImage coracao3, coracao2, coracao1;
+
+    public Vidas()
+    {
+        coracao3 = getImage();
+        coracao2 = new GreenfootImage("2coraçoes.png");
+        coracao1 = new GreenfootImage("1coraçao.png");
+    }
+    
+    public void act(){
+        checkLife();
+    }
+
+    /**
+     * funçao que muda a imagem dependendo da quantidade de vidas atualmente
+     */
+    public void checkLife(){
+        level = getWorldOfType(Level.class);
+        int lifeStatus = level.getAVida();
+        GreenfootImage imagem = getImage();
+        if (lifeStatus == 3 && imagem != coracao3){
+            setImage(coracao3);
+        } else if (lifeStatus == 2 && imagem != coracao2){
+            setImage(coracao2);
+        } else if (lifeStatus == 1 && imagem != coracao1){
+            setImage(coracao1);
+        }
+    }
+}

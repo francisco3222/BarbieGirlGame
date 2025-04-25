@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.target=Gravity
+comment0.text=\n\ controla\ funcoes\ relacionadas\ com\ o\ movimento\ em\ geral\ do\ mundo,\ como\ graivdade\ ou\ o\ ecra\ ir\ descendo\ automaticamente\n\ \n\ @Leandro\ Goncalves\n
+comment1.params=
+comment1.target=void\ atGround()
+comment2.params=
+comment2.target=void\ gravity()
+comment3.params=
+comment3.target=boolean\ getFalling()
+comment4.params=fall
+comment4.target=void\ setFalling(boolean)
+comment5.params=speed
+comment5.target=void\ setGravitySpeed(int)
+comment6.params=
+comment6.target=void\ descendo()
+comment7.params=
+comment7.target=int\ stayInScreen()
+numComments=8

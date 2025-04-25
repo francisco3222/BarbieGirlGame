@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.target=Security
+comment0.text=\n\ um\ enimigo\ comum\ no\ jogo\ que\ apenas\ anda\ numa\ area\ podendo\ descer\ de\ plataformas\ durante\ o\ jogo\n\ \n\ @Francisco\ Adelino\ -\ 2167322\n
+comment1.params=
+comment1.target=Security()
+comment2.params=
+comment2.target=void\ style()
+comment2.text=\n\ uma\ fun\u00E7ao\ que\ define\ se\ o\ enimigo\ vai\ ser\ um\ seguran\u00E7a\ ou\ um\ empresario\n
+comment3.params=
+comment3.target=void\ act()
+comment4.params=speed
+comment4.target=void\ moving(int)
+comment4.text=\n\ fun\u00E7ao\ que\ permite\ o\ movimento\ dentro\ de\ areas\ especificas\ com\ uma\ baixa\ velocidade\n
+numComments=5

@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=Start
+comment0.text=\n\ Menu\ inicial\n\ \n\ @Leandro\ Goncalves\n
+comment1.params=
+comment1.target=Start()
+comment2.params=
+comment2.target=greenfoot.GreenfootSound\ getMenuMusic()
+comment3.params=
+comment3.target=void\ startMenu()
+numComments=4

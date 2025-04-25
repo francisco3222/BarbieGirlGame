@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Vidas
+comment0.text=\n\ Vidas\ dos\ players,\ quando\ chegam\ a\ 0\ terminam\ o\ jogo\n\ \n\ @Leandro\ Gon\u00E7alves\ -\ 2123522\n
+comment1.params=
+comment1.target=Vidas()
+comment2.params=
+comment2.target=void\ act()
+comment3.params=
+comment3.target=void\ checkLife()
+comment3.text=\n\ fun\u00E7ao\ que\ muda\ a\ imagem\ dependendo\ da\ quantidade\ de\ vidas\ atualmente\n
+numComments=4

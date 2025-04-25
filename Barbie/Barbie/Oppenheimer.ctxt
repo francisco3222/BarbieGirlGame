@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Oppenheimer
+comment0.text=\n\ Enimigo\ final\ do\ Jogo,\ apenas\ e\ preciso\ tocar\ nele\ para\ vencer\n\ \n\ @Francisco\ Adelino\ /\ Lucas\ Waddle\n
+comment1.params=
+comment1.target=Oppenheimer()
+comment2.params=
+comment2.target=void\ act()
+comment3.params=speed
+comment3.target=void\ moving(int)
+comment3.text=\n\ uma\ fun\u00E7ao\ que\ faz\ o\ Oppenheimer\ mover\ entro\ de\ uma\ area\ entre\ catos\ e\ plantas\n
+numComments=4

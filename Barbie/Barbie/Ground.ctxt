@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=Ground
+comment0.text=\n\ um\ Objeto\ usado\ para\ que\ o\ player\ apenas\ conte\ como\ chao\ o\ topo\ das\ plataformas\ e\ nao\ todo\ o\ objeto\ da\ classe\ Stone\n\ \n\ @Leandro\ Gon\u00E7alves\ -\ 2123522\n
+comment1.params=
+comment1.target=void\ act()
+numComments=2

@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=Enemies
+comment0.text=\n\ Controla\ funcoes\ que\ sejam\ usadas\ tanto\ pelos\ segurancas\ como\ pelo\ Oppenheimer\n\ \n\ @Francisco\ Adelino\n
+comment1.params=base\ walk1\ walk2
+comment1.target=void\ moveImage(greenfoot.GreenfootImage,\ greenfoot.GreenfootImage,\ greenfoot.GreenfootImage)
+comment2.params=base\ walk1\ walk2
+comment2.target=void\ flipImage(greenfoot.GreenfootImage,\ greenfoot.GreenfootImage,\ greenfoot.GreenfootImage)
+numComments=3
